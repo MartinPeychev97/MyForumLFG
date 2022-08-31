@@ -1,18 +1,18 @@
-﻿
-using API.Services.ServiceContracts;
+﻿using API.Services.ServiceContracts;
 using DataAccess.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Services.Requests;
 
 namespace API.Services.Services
 {
     public class UserService : IUserService
     {
-        public UserService()
+        private readonly SignInManager<UserEntity> signInManager;
+        private readonly UserManager<UserEntity> userManager;
+        public UserService(SignInManager<UserEntity> signInManager, UserManager<UserEntity> userManager)
         {
+            this.signInManager = signInManager;
+            this.userManager = userManager;
         }
 
         public Task<UserEntity> CreateUserAsync()
