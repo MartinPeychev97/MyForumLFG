@@ -6,19 +6,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace API.DataAccess.DBModels
+namespace DataAccess.Entities
 {
-    public class User : IdentityUser
+    public class UserEntity : IdentityUser
     {
-        public User()
+        public UserEntity()
         {
-            
+
         }
         public Guid Id { get; set; }
         [Range(2, 40)]
         public string FirstName { get; set; }
         [Range(2, 40)]
         public string Lastname { get; set; }
-        
     }
 }

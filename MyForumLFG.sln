@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32328.378
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "API\API.csproj", "{A04569C2-3A10-48EB-A75A-162F897E6585}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "API\API.csproj", "{A04569C2-3A10-48EB-A75A-162F897E6585}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API.Services", "API.Services\API.Services.csproj", "{1ACF58B7-00A5-4544-B10B-CAB7B8F4B322}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "API.Services\Services.csproj", "{1ACF58B7-00A5-4544-B10B-CAB7B8F4B322}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API.DataAccess", "API.DataAccess\API.DataAccess.csproj", "{F15B8A10-DC4B-4B66-AA07-2D3E53D59764}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "API.DataAccess\DataAccess.csproj", "{F15B8A10-DC4B-4B66-AA07-2D3E53D59764}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

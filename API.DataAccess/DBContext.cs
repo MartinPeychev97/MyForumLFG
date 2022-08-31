@@ -1,4 +1,4 @@
-﻿using API.DataAccess.DBModels;
+﻿using DataAccess.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace API.DataAccess
 {
-    public class DBContext :IdentityDbContext<User>
+    public class DBContext :IdentityDbContext<UserEntity>
     {
         public DBContext()
         {

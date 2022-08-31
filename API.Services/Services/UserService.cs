@@ -1,5 +1,6 @@
-﻿using API.DataAccess.DBModels;
+﻿
 using API.Services.ServiceContracts;
+using DataAccess.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,22 +15,22 @@ namespace API.Services.Services
         {
         }
 
-        public Task<User> CreateUser()
+        public Task<UserEntity> CreateUserAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<User> DeleteUser(Guid id)
+        public Task<UserEntity> DeleteUserAsync(Guid id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<User> GetUserById(Guid id)
+        public Task<UserEntity> GetUserByIdAsync(Guid id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<User> UpdateUser(User user)
+        public Task<UserEntity> UpdateUserAsync(UserEntity user)
         {
             throw new NotImplementedException();
         }
