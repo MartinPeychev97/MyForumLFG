@@ -2,7 +2,7 @@
 
 namespace Services.Requests
 {
-    public class RegisterUserRequest
+    public class CreateUserRequest
     {
         public string FirstName { get; set; } =String.Empty;
         public string LastName { get; set; } =String.Empty;
