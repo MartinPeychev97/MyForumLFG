@@ -1,5 +1,6 @@
 ﻿using DataAccess.Entities;
 using Services.Requests;
+using Services.Responce;
 
 namespace API.Services.ServiceContracts
 {
@@ -8,7 +9,7 @@ namespace API.Services.ServiceContracts
         Task<AuthenticateResponse> LoginAsync(LoginUserRequest userInput);
         Task LogoutAsync();
         //Task<AuthenticateResponse> RegisterAsync(RegisterUserRequest request);
-        Task<UserEntity> CreateUserAsync();
+        Task<CreateUserResponse> CreateUser(CreateUserRequest request);
         Task<UserEntity> UpdateUserAsync(UserEntity user);
         Task<UserEntity> DeleteUserAsync(Guid id);
         Task<UserEntity> GetUserByIdAsync(Guid id);

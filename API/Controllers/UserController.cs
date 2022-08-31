@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-//implement
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
