@@ -1,26 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Services.Requests
 {
     public class RegisterUserRequest
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
+        public string FirstName { get; set; } =String.Empty;
+        public string LastName { get; set; } =String.Empty;
+        public string Email { get; set; } = String.Empty;
         [DataType(DataType.Password)]
         [StringLength(44, ErrorMessage = "Password must not exceed 44 characters")]
-        public string Password { get; set; }
+        public string Password { get; set; } = String.Empty;
         [StringLength(44, ErrorMessage = "Password must not exceed 44 characters")]
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "Password and Confirmation Password must match.")]
-        public string ConfirmPassword { get; set; }
+        public string ConfirmPassword { get; set; } = String.Empty;
         [Phone]
         [DataType(DataType.PhoneNumber, ErrorMessage = "Phone number must only contain numbers")]
-        public string PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; } = String.Empty;
     }
 }

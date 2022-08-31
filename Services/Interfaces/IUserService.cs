@@ -1,14 +1,13 @@
 ﻿using DataAccess.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Services.Requests;
 
 namespace API.Services.ServiceContracts
 {
     public interface IUserService
     {
+        Task<AuthenticateResponse> LoginAsync(LoginUserRequest userInput);
+        Task LogoutAsync();
+        //Task<AuthenticateResponse> RegisterAsync(RegisterUserRequest request);
         Task<UserEntity> CreateUserAsync();
         Task<UserEntity> UpdateUserAsync(UserEntity user);
         Task<UserEntity> DeleteUserAsync(Guid id);

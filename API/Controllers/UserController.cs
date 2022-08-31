@@ -7,5 +7,9 @@ namespace API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        public UserController()
+        {
+
+        }
     }
 }
