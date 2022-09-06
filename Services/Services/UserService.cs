@@ -1,65 +1,79 @@
-﻿using API.Services.ServiceContracts;
+﻿using API.DataAccess;
+using API.Services.ServiceContracts;
 using DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using Services.Repositories;
 using Services.Requests;
-using Services.Responce;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+using AutoMapper;
 
-namespace API.Services.Services
+
+namespace API.Services.Services;
+
+public class UserService : IUserService
 {
-    public class UserService : IUserService
+    private DBContext context;
+    private readonly IMapper mapper;
+
+    public UserService(DBContext context, IMapper mapper)
     {
-        private readonly SignInManager<UserEntity> signInManager;
-        private readonly UserManager<UserEntity> userManager;
-        private readonly IConfiguration configuration;
-        private readonly UserRepository userRepository;
-        
-        public UserService(IConfiguration configuration, SignInManager<UserEntity> signInManager, UserManager<UserEntity> userManager, UserRepository userRepository)
-        {
-            this.configuration = configuration;
-            this.signInManager = signInManager;
-            this.userManager = userManager;
-            this.userRepository = userRepository;
-        }
-
-        public Task<CreateUserResponse> CreateUser(CreateUserRequest request)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<UserEntity> DeleteUserAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<UserEntity> GetUserByIdAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<UserEntity> UpdateUserAsync(UserEntity user)
-        {
-            throw new NotImplementedException();
-        }
-        public async Task<AuthenticateResponse> LoginAsync(LoginUserRequest userInput)
-        {
-            var result = await signInManager.PasswordSignInAsync(userInput.Email, userInput.Password, false, false);
-           if (result.Succeeded)
-           {
-               var generateToken = userRepository.GenerateJwtToken(userInput);
-               var token = new AuthenticateResponse(await generateToken);
-               return token;
-           }
-            return null;
-        }
-        public async Task LogoutAsync()
-        {
-            await signInManager.SignOutAsync();
-        }
+        this.context = context;
+        this.mapper = mapper;
     }
+
+    public void Create(CreateUserRequest request)
+    {
+        // validate
+        if (context.Users.Any(x => x.Email == request.Email))
+            throw new Exception("User with the email '" + request.Email + "' already exists");
+
+        // map model to new user object
+        var user = mapper.Map<UserEntity>(request);
+
+        // hash password
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
+
+        // save user
+        context.Users.Add(user);
+        context.SaveChanges();
+    }
+
+    public void Delete(Guid id)
+    {
+        var user = GetById(id);
+        context.Users.Remove(user);
+        context.SaveChanges();
+    }
+
+
+    public void Update(Guid id, UpdateUserRequest request)
+    {
+        var user = GetById(id);
+
+        // validate
+        if (request.Email != user.Email && context.Users.Any(x => x.Email == request.Email))
+            throw new Exception("User with the email '" + request.Email + "' already exists");
+
+        // hash password if it was entered
+        if (!string.IsNullOrEmpty(request.Password))
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+
+        // copy model to user and save
+        mapper.Map(request, user);
+        context.Users.Update(user);
+        context.SaveChanges();
+    }
+
+    public UserEntity GetById(Guid id)
+    {
+        var user = context.Users.Find(id);
+        if (user == null) 
+            throw new KeyNotFoundException("User not found");
+        return user;
+    }
+    public IEnumerable<UserEntity> GetAll()
+    {
+        return context.Users;
+    }
+    
 }

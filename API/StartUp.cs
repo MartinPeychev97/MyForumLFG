@@ -1,12 +1,12 @@
-﻿using API.DataAccess;
+﻿using API.Services.ServiceContracts;
+using API.Services.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using Services.Repositories;
 using System.Text;
 
 namespace API;
-
 public class StartUp
 {
     public StartUp(IWebHostEnvironment env)
@@ -24,6 +24,7 @@ public class StartUp
 
     public void ConfigureServices(IServiceCollection services)
     {
+        
         services.AddCors(options =>
         {
             options.AddPolicy("AllowOrigin", x =>
@@ -33,12 +34,6 @@ public class StartUp
                 x.AllowAnyOrigin();
             });
         });
-        //services.AddDbContext<DBContext>(options =>
-        //    options.UseSqlServer(
-        //    Configuration.GetConnectionString("DefaultConnection")));
-
-        //services.AddMvc()
-        //    .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<AuthenticateRequestValidator>());
 
         services.Configure<IdentityOptions>(options =>
         {
@@ -67,6 +62,10 @@ public class StartUp
 
         services.AddAuthentication();
         services.AddControllers();
+
+        // configure DI for application services
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IUserRepository, UserRepository>();
     }
 }
 

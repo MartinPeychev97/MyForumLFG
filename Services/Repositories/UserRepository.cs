@@ -3,26 +3,40 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Services.Requests;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Services.Repositories;
 
-public class UserRepository
+public class UserRepository : IUserRepository
 {
     private readonly UserManager<UserEntity> userManager;
     private readonly IConfiguration configuration;
+    private readonly SignInManager<UserEntity> signInManager;
+    private readonly UserRepository userRepository;
 
-    public UserRepository(UserManager<UserEntity> userManager, IConfiguration configuration)
+    public UserRepository(UserManager<UserEntity> userManager, IConfiguration configuration, SignInManager<UserEntity> signInManager, UserRepository userRepository)
     {
         this.userManager = userManager;
         this.configuration = configuration;
-
+        this.signInManager = signInManager;
+        this.userRepository = userRepository;
+    }
+    public async Task<AuthenticateResponse> Login(LoginUserRequest userInput)
+    {
+        var result = await signInManager.PasswordSignInAsync(userInput.Email, userInput.Password, false, false);
+        if (result.Succeeded)
+        {
+            var generateToken = userRepository.GenerateJwtToken(userInput);
+            var token = new AuthenticateResponse(await generateToken);
+            return token;
+        }
+        return null;
+    }
+    public async Task Logout()
+    {
+        await signInManager.SignOutAsync();
     }
     public async Task<string> GenerateJwtToken(LoginUserRequest user)
     {

@@ -6,12 +6,12 @@ namespace API.Services.ServiceContracts
 {
     public interface IUserService
     {
-        Task<AuthenticateResponse> LoginAsync(LoginUserRequest userInput);
-        Task LogoutAsync();
+        
         //Task<AuthenticateResponse> RegisterAsync(RegisterUserRequest request);
-        Task<CreateUserResponse> CreateUser(CreateUserRequest request);
-        Task<UserEntity> UpdateUserAsync(UserEntity user);
-        Task<UserEntity> DeleteUserAsync(Guid id);
-        Task<UserEntity> GetUserByIdAsync(Guid id);
+        void Create(CreateUserRequest request);
+        void Update(Guid id, UpdateUserRequest request);
+        void Delete(Guid id);
+        UserEntity GetById(Guid id);
+        IEnumerable<UserEntity> GetAll();
     }
 }
