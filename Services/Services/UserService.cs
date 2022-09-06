@@ -3,6 +3,7 @@ using DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Services.Repositories;
 using Services.Requests;
 using Services.Responce;
 using System.IdentityModel.Tokens.Jwt;
@@ -16,11 +17,14 @@ namespace API.Services.Services
         private readonly SignInManager<UserEntity> signInManager;
         private readonly UserManager<UserEntity> userManager;
         private readonly IConfiguration configuration;
-        public UserService(IConfiguration configuration, SignInManager<UserEntity> signInManager, UserManager<UserEntity> userManager)
+        private readonly UserRepository userRepository;
+        
+        public UserService(IConfiguration configuration, SignInManager<UserEntity> signInManager, UserManager<UserEntity> userManager, UserRepository userRepository)
         {
             this.configuration = configuration;
             this.signInManager = signInManager;
             this.userManager = userManager;
+            this.userRepository = userRepository;
         }
 
         public Task<CreateUserResponse> CreateUser(CreateUserRequest request)
@@ -47,7 +51,7 @@ namespace API.Services.Services
             var result = await signInManager.PasswordSignInAsync(userInput.Email, userInput.Password, false, false);
            if (result.Succeeded)
            {
-               var generateToken = GenerateJwtToken(userInput);
+               var generateToken = userRepository.GenerateJwtToken(userInput);
                var token = new AuthenticateResponse(await generateToken);
                return token;
            }
@@ -56,36 +60,6 @@ namespace API.Services.Services
         public async Task LogoutAsync()
         {
             await signInManager.SignOutAsync();
-        }
-
-        private async Task<string> GenerateJwtToken(LoginUserRequest user)
-        {
-            var claims = new List<Claim>
-            {
-                new Claim("email", user.Email.ToString()),
-            };
-
-            var userRole = await userManager.FindByEmailAsync(user.Email);
-            var roles = await userManager.GetRolesAsync(userRole);
-
-            foreach (var role in roles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var jwtSecret = configuration.GetSection("AppSettings").GetSection("Secret");
-            var key = Encoding.UTF8.GetBytes(jwtSecret.Value);
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Issuer = configuration.GetSection("AppSettings").GetSection("Issuer").Value,
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddDays(1),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
         }
     }
 }

@@ -4,8 +4,8 @@ namespace Services.Requests
 {
     public class CreateUserRequest
     {
-        public string FirstName { get; set; } =String.Empty;
-        public string LastName { get; set; } =String.Empty;
+        public string FirstName { get; set; } = String.Empty;
+        public string LastName { get; set; } = String.Empty;
         public string Email { get; set; } = String.Empty;
         [DataType(DataType.Password)]
         [StringLength(44, ErrorMessage = "Password must not exceed 44 characters")]
