@@ -14,21 +14,20 @@ public class UserRepository : IUserRepository
     private readonly UserManager<UserEntity> userManager;
     private readonly IConfiguration configuration;
     private readonly SignInManager<UserEntity> signInManager;
-    private readonly UserRepository userRepository;
+    
 
-    public UserRepository(UserManager<UserEntity> userManager, IConfiguration configuration, SignInManager<UserEntity> signInManager, UserRepository userRepository)
+    public UserRepository(UserManager<UserEntity> userManager, IConfiguration configuration, SignInManager<UserEntity> signInManager, IUserRepository userRepository)
     {
         this.userManager = userManager;
         this.configuration = configuration;
         this.signInManager = signInManager;
-        this.userRepository = userRepository;
     }
     public async Task<AuthenticateResponse> Login(LoginUserRequest userInput)
     {
         var result = await signInManager.PasswordSignInAsync(userInput.Email, userInput.Password, false, false);
         if (result.Succeeded)
         {
-            var generateToken = userRepository.GenerateJwtToken(userInput);
+            var generateToken = GenerateJwtToken(userInput);
             var token = new AuthenticateResponse(await generateToken);
             return token;
         }
