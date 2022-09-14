@@ -1,79 +1,33 @@
-﻿using API.DataAccess;
-using API.Services.ServiceContracts;
-using DataAccess.Entities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Services.Repositories;
-using Services.Requests;
-using AutoMapper;
-
+﻿using AutoMapper;
+using Services.Interfaces;
+using Services.Models.Requests;
+using Services.Models.Responses;
 
 namespace API.Services.Services;
 
 public class UserService : IUserService
 {
-    private DBContext context;
     private readonly IMapper mapper;
+    private readonly IUserRepository repository;
 
-    public UserService(DBContext context, IMapper mapper)
+    public UserService(IUserRepository repository, IMapper mapper)
     {
-        this.context = context;
+        this.repository = repository;
         this.mapper = mapper;
     }
 
-    public void Create(CreateUserRequest request)
-    {
-        // validate
-        if (context.Users.Any(x => x.Email == request.Email))
-            throw new Exception("User with the email '" + request.Email + "' already exists");
+    public async Task<UserResponse> Create(CreateUserRequest request)
+        => await repository.Create(request);
 
-        // map model to new user object
-        var user = mapper.Map<UserEntity>(request);
+    public async Task<UserResponse> Update(Guid id, UpdateUserRequest request)
+        => await repository.Update(id, request);
 
-        // hash password
-        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
+    public async Task Delete(Guid id)
+        => await repository.Delete(id);
 
-        // save user
-        context.Users.Add(user);
-        context.SaveChanges();
-    }
+    public async Task<UserResponse> GetUserById(Guid id)
+        => await repository.GetUserById(id);
 
-    public void Delete(Guid id)
-    {
-        var user = GetById(id);
-        context.Users.Remove(user);
-        context.SaveChanges();
-    }
-
-
-    public void Update(Guid id, UpdateUserRequest request)
-    {
-        var user = GetById(id);
-
-        // validate
-        if (request.Email != user.Email && context.Users.Any(x => x.Email == request.Email))
-            throw new Exception("User with the email '" + request.Email + "' already exists");
-
-        // hash password if it was entered
-        if (!string.IsNullOrEmpty(request.Password))
-            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
-
-        // copy model to user and save
-        mapper.Map(request, user);
-        context.Users.Update(user);
-        context.SaveChanges();
-    }
-
-    public UserEntity GetById(Guid id)
-    {
-        var user = context.Users.Find(id);
-        if (user == null) 
-            throw new KeyNotFoundException("User not found");
-        return user;
-    }
-    public IEnumerable<UserEntity> GetAll()
-    {
-        return context.Users;
-    }
-    
+    public async Task<IReadOnlyCollection<UserResponse>> GetAll()
+        => await repository.GetAll();
 }

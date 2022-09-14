@@ -1,55 +1,52 @@
-﻿using API.Services.ServiceContracts;
-using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Services.Requests;
+﻿using Microsoft.AspNetCore.Mvc;
+using Services.Interfaces;
+using Services.Models.Requests;
 
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/user/")]
 public class UserController : ControllerBase
 {
     private IUserService userService;
-    private IMapper mapper;
 
-    public UserController(IUserService userService, IMapper mapper)
+    public UserController(IUserService userService)
     {
         this.userService = userService;
-        this.mapper = mapper;
     }
 
-    [HttpGet]
-    public IActionResult GetAll()
+    [HttpGet("get-all")]
+    public async Task<IActionResult> GetAll()
     {
-        var users = userService.GetAll();
+        var users = await userService.GetAll();
         return Ok(users);
     }
 
-    [HttpGet("{id}")]
-    public IActionResult GetById(Guid id)
+    [HttpGet("get")]
+    public async Task<IActionResult> GetById(Guid id)
     {
-        var user = userService.GetById(id);
+        var user = await userService.GetUserById(id);
         return Ok(user);
     }
 
-    [HttpPost]
-    public IActionResult Create(CreateUserRequest model)
+    [HttpPost("create")]
+    public async Task<IActionResult> Create(CreateUserRequest model)
     {
-        userService.Create(model);
-        return Ok(new { message = "User created" });
+        var user = await userService.Create(model);
+        return Ok(user);
     }
 
-    [HttpPut("{id}")]
-    public IActionResult Update(Guid id, UpdateUserRequest model)
+    [HttpPut("update")]
+    public async Task<IActionResult> Update(Guid id, UpdateUserRequest model)
     {
-        userService.Update(id, model);
-        return Ok(new { message = "User updated" });
+        var user = await userService.Update(id, model);
+        return Ok(user);
     }
 
-    [HttpDelete("{id}")]
-    public IActionResult Delete(Guid id)
+    [HttpDelete("delete")]
+    public async Task<IActionResult> Delete(Guid id)
     {
-        userService.Delete(id);
+        await userService.Delete(id);
         return Ok(new { message = "User deleted" });
     }
 }

@@ -4,18 +4,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.DataAccess
 {
-    public class DBContext :IdentityDbContext<UserEntity>
+    public class DBContext : IdentityDbContext<UserEntity>
     {
-        public DBContext()
-        {
-                
-        }
         public DBContext(DbContextOptions<DBContext> options) : base(options)
         {
         }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            
+            //Add DbSets for User.
             base.OnModelCreating(builder);
         }
         
