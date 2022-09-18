@@ -1,17 +1,15 @@
-﻿using DataAccess.Entities;
-using Services.Requests;
-using Services.Responce;
+﻿using Services.Models.Requests;
+using Services.Models.Responses;
 
-namespace API.Services.ServiceContracts
+namespace Services.Interfaces
 {
     public interface IUserService
     {
-        Task<AuthenticateResponse> LoginAsync(LoginUserRequest userInput);
-        Task LogoutAsync();
         //Task<AuthenticateResponse> RegisterAsync(RegisterUserRequest request);
-        Task<CreateUserResponse> CreateUser(CreateUserRequest request);
-        Task<UserEntity> UpdateUserAsync(UserEntity user);
-        Task<UserEntity> DeleteUserAsync(Guid id);
-        Task<UserEntity> GetUserByIdAsync(Guid id);
+        Task<UserResponse> Create(CreateUserRequest request);
+        Task<UserResponse> Update(Guid id, UpdateUserRequest request);
+        Task Delete(Guid id);
+        Task<UserResponse> GetUserById(Guid id);
+        Task<IReadOnlyCollection<UserResponse>> GetAll();
     }
 }
