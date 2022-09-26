@@ -23,9 +23,9 @@ namespace DataAccess.Repositories
         private DBContext context;
         private readonly IMapper mapper;
 
-        public UserRepository(DBContext context,
-            UserManager<UserEntity> userManager,
-            IConfiguration configuration,
+        public UserRepository(DBContext context, 
+            UserManager<UserEntity> userManager, 
+            IConfiguration configuration, 
             SignInManager<UserEntity> signInManager,
             IMapper mapper)
         {
@@ -39,7 +39,7 @@ namespace DataAccess.Repositories
         public async Task<BaseResponse> Create(CreateUserRequest request)
         {
             var existingUser = await userManager.FindByEmailAsync(request.Email);
-
+            
             if (existingUser is not null)
                 throw new Exception("User with the email '" + request.Email + "' already exists");
 
@@ -110,7 +110,7 @@ namespace DataAccess.Repositories
                 };
 
             return new BaseResponse()
-            {
+        {
                 Succees = result.Succeeded,
             };
         }
@@ -122,7 +122,7 @@ namespace DataAccess.Repositories
             if (!result.Succeeded)
             {
                 return new AuthenticateResponse()
-                {
+            {
                     Unautorised = result.IsNotAllowed
                 };
             }
