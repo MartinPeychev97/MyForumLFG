@@ -2,11 +2,13 @@
 using AutoMapper;
 using DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Services.Interfaces;
 using Services.Models.Requests;
 using Services.Models.Responses;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -34,57 +36,103 @@ namespace DataAccess.Repositories
             this.mapper = mapper;
         }
 
-        public async Task<UserResponse> Create(CreateUserRequest request)
+        public async Task<BaseResponse> Create(CreateUserRequest request)
         {
-            var user = context.Users.Where(x => x.Email.Equals(request.Email)).ToList();
+            var existingUser = await userManager.FindByEmailAsync(request.Email);
             
-            if (user is not null)
+            if (existingUser is not null)
                 throw new Exception("User with the email '" + request.Email + "' already exists");
 
-            // map model to new user object
-            //Which to custom mapper
-            var userEntity = mapper.Map<UserEntity>(request);
+            var user = mapper.Map<UserEntity>(request);
 
-            // hash password
-            userEntity.PasswordHash = BCrypt.Net.BCrypt.HashPassword(userEntity.PasswordHash);
+            string confirmEmailToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            var confirmedEmail = await userManager.ConfirmEmailAsync(user, confirmEmailToken);
 
-            // save user
-            await context.Users.AddAsync(userEntity);
-            await context.SaveChangesAsync();
+            if (!confirmedEmail.Succeeded)
+                throw new Exception("User email confirmation failed");
 
-            return new UserResponse();
+            var result = await userManager.CreateAsync(user, request.Password);
+
+            if (!result.Succeeded)
+                return new BaseResponse
+                {
+                    Code = result.Errors.First().Code,
+                    Message = result.Errors.First().Description
+                };
+
+            return new BaseResponse()
+            {
+                Succees = result.Succeeded,
+            };
         }
 
-        public Task Delete(Guid id)
+        public async Task Delete(string email)
         {
-            throw new NotImplementedException();
+            var user = await userManager.Users.FirstOrDefaultAsync(x => x.Email == email);
+            await userManager.DeleteAsync(user);
         }
 
-        public Task<IReadOnlyCollection<UserResponse>> GetAll()
+        public async Task<IReadOnlyCollection<UserResponse>> GetAll()
         {
-            throw new NotImplementedException();
+            var allUsers = await userManager.Users.ToListAsync();
+            return (IReadOnlyCollection<UserResponse>)allUsers;
         }
 
-        public Task<UserResponse> GetUserById(Guid id)
+        public async Task<UserResponse> GetUserById(string email)
         {
-            throw new NotImplementedException();
+            var user = await userManager.Users
+               .FirstOrDefaultAsync(e => e.Email == email);
+
+            if (user is null)
+                throw new Exception("The user you are looking for does not exist");
+
+            var result = mapper.Map<UserResponse>(user);
+
+            return result;
         }
 
-        public Task<UserResponse> Update(Guid id, UpdateUserRequest request)
+        public async Task<BaseResponse> Update(UpdateUserRequest request)
         {
-            throw new NotImplementedException();
+            var existingUser = GetUserById(request.Email);
+
+            if (existingUser is null)
+                throw new Exception("The user you are looking for does not exist");
+
+            var user = mapper.Map<UserEntity>(request);
+            var result = await userManager.UpdateAsync(user);
+
+
+            if (!result.Succeeded)
+                return new BaseResponse
+                {
+                    Code = result.Errors.First().Code,
+                    Message = result.Errors.First().Description
+                };
+
+            return new BaseResponse()
+        {
+                Succees = result.Succeeded,
+            };
         }
 
         public async Task<AuthenticateResponse> Login(LoginUserRequest userInput)
         {
             var result = await signInManager.PasswordSignInAsync(userInput.Email, userInput.Password, false, false);
-            if (result.Succeeded)
+
+            if (!result.Succeeded)
             {
-                var generateToken = GenerateJwtToken(userInput);
-                var token = new AuthenticateResponse(await generateToken);
-                return token;
+                return new AuthenticateResponse()
+            {
+                    Unautorised = result.IsNotAllowed
+                };
             }
-            return null;
+
+            var generateToken = await GenerateJwtToken(userInput);
+
+            return new AuthenticateResponse()
+            {
+                Token = generateToken
+            };
         }
 
         public async Task Logout()

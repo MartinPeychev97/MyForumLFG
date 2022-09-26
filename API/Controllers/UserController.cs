@@ -23,30 +23,30 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("get")]
-    public async Task<IActionResult> GetById(Guid id)
+    public async Task<IActionResult> GetById(string email)
     {
-        var user = await userService.GetUserById(id);
+        var user = await userService.GetUserById(email);
         return Ok(user);
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> Create(CreateUserRequest model)
+    public async Task<IActionResult> Create([FromBody] CreateUserRequest request)
     {
-        var user = await userService.Create(model);
+        var user = await userService.Create(request);
         return Ok(user);
     }
 
     [HttpPut("update")]
-    public async Task<IActionResult> Update(Guid id, UpdateUserRequest model)
+    public async Task<IActionResult> Update([FromBody] UpdateUserRequest request)
     {
-        var user = await userService.Update(id, model);
+        var user = await userService.Update( request);
         return Ok(user);
     }
 
     [HttpDelete("delete")]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<IActionResult> Delete(string email)
     {
-        await userService.Delete(id);
+        await userService.Delete(email);
         return Ok(new { message = "User deleted" });
     }
 }

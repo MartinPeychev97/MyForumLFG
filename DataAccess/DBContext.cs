@@ -12,7 +12,6 @@ namespace API.DataAccess
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            //Add DbSets for User.
             base.OnModelCreating(builder);
         }
         
