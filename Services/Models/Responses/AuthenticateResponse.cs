@@ -1,10 +1,9 @@
-﻿namespace Services.Models.Responses;
+﻿using Microsoft.AspNetCore.Identity;
 
-public class AuthenticateResponse
+namespace Services.Models.Responses;
+
+public class AuthenticateResponse: SignInResult
 {
-    public AuthenticateResponse(string token)
-    {
-        Token = token;
-    }
     public string Token { get; set; }
+    public bool Unautorised { get; set; }
 }

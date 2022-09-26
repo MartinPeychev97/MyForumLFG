@@ -16,17 +16,17 @@ public class UserService : IUserService
         this.mapper = mapper;
     }
 
-    public async Task<UserResponse> Create(CreateUserRequest request)
+    public async Task<BaseResponse> Create(CreateUserRequest request)
         => await repository.Create(request);
 
-    public async Task<UserResponse> Update(Guid id, UpdateUserRequest request)
-        => await repository.Update(id, request);
+    public async Task<BaseResponse> Update(UpdateUserRequest request)
+        => await repository.Update(request);
 
-    public async Task Delete(Guid id)
-        => await repository.Delete(id);
+    public async Task Delete(string email)
+        => await repository.Delete(email);
 
-    public async Task<UserResponse> GetUserById(Guid id)
-        => await repository.GetUserById(id);
+    public async Task<UserResponse> GetUserById(string email)
+        => await repository.GetUserById(email);
 
     public async Task<IReadOnlyCollection<UserResponse>> GetAll()
         => await repository.GetAll();

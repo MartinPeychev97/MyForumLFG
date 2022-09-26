@@ -5,10 +5,10 @@ namespace Services.Interfaces;
 
 public interface IUserRepository
 {
-    Task<UserResponse> Create(CreateUserRequest request);
-    Task<UserResponse> Update(Guid id, UpdateUserRequest request);
-    Task Delete(Guid id);
-    Task<UserResponse> GetUserById(Guid id);
+    Task<BaseResponse> Create(CreateUserRequest request);
+    Task<BaseResponse> Update(UpdateUserRequest request);
+    Task Delete(string email);
+    Task<UserResponse> GetUserById(string email);
     Task<IReadOnlyCollection<UserResponse>> GetAll();
     Task<AuthenticateResponse> Login(LoginUserRequest userInput);
     Task Logout();
